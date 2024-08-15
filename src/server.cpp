@@ -19,6 +19,10 @@ static void GameLoop(SharedMemory &gameMemory, int maxSlots) {
         if (gamePtr[which].guess == -1) {
             break;
         }
+        if (gamePtr[which].guess == -2) {
+            gameMemory.writeUnlock();
+            continue;
+        }
         auto res = MakeGuess(mysteryNumber, gamePtr[which].guess);
         auto outputStr = std::format(
             "Player {}:\n\tGuess {}\tBulls {}\tCows {}\n", gamePtr[which].pid,
@@ -75,11 +79,12 @@ int main() {
             if (freeGame.freeSlots == 0) {
                 gameID = -1;
             } else {
+            std::cout << "freegame "<< freeGame.freeSlots << ' ' << freeGame.gameID << ' ' << freeGame.maxSlots << '\n';
                 gameID = freeGame.gameID;
                 pq.pop();
                 freeGame.freeSlots--;
                 pq.push(freeGame);
-                maxSlots = freeGame.freeSlots;
+                maxSlots = freeGame.maxSlots;
                 std::cout << "Connected to game " << gameID << '\n';
             }
         }
@@ -87,6 +92,7 @@ int main() {
         rep.writeLock();
         repPtr->maxSlots = maxSlots;
         repPtr->gameID = gameID;
+        std::cout << "!!! " << maxSlots << ' ' << gameID << '\n';
         rep.readUnlock();
     }
     for (auto &t : threads) {

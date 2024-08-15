@@ -45,7 +45,7 @@ class WeakSharedMemory {
         A_READ = PROT_READ,
         A_WRITE = PROT_WRITE,
     } ATTACH_MODE;
-
+    WeakSharedMemory() = default;
     WeakSharedMemory(std::string_view name, std::size_t size);
     ~WeakSharedMemory();
     WeakSharedMemory(const WeakSharedMemory& other) = delete;
