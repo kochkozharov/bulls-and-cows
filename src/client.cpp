@@ -63,7 +63,6 @@ int main() {
             gameID = repPtr->gameID;
             
             maxSlots = repPtr->maxSlots;
-            std::cout << "????" << gameID << ' ' << maxSlots << '\n';
             rep.writeUnlock();
         } else if (command == "stop") {
             req.writeLock();
@@ -84,10 +83,8 @@ int main() {
     WeakSharedMemory gameMemory(
         "BC" + std::to_string(gameID),
         sizeof(int) + maxSlots * sizeof(ConnectionSlot));
-    auto *statusPtr = static_cast<int *>(gameMemory.getData());
-    auto *gamePtr = reinterpret_cast<ConnectionSlot *>(statusPtr + 1);
-    bool connect = false;
-    int conID = 0;
+    Guesser gsr(gameMemory);
+    gsr.sendGuess(-2);
     while (true) {
         int guess;
         std::cin >> guess;
@@ -95,20 +92,6 @@ int main() {
             std::cerr << "Incorrect format\n";
             continue;
         }
-        std::cerr << std::boolalpha << !connect << ' ' << (gamePtr[conID].pid != 0);
-        while (!connect && (gamePtr[conID].pid != 0)) {
-            ++conID;
-        }
-        connect = true;
-        gameMemory.writeLock();
-        *statusPtr = conID;
-        std::cerr << conID << "!!!!!!!!!\n";
-        gamePtr[conID].pid = getpid();
-        gamePtr[conID].guess = guess;
-        gameMemory.readUnlock();
-        std::cout << "gameptr " << maxSlots << ' ' << gameID << '\n';
-        for ( int i = 0; i < maxSlots; ++i) {
-            std::cout << gamePtr[i].pid << ' ' << gamePtr[i].guess << '\n';
-        }
+        gsr.sendGuess(guess);
     }
 }

@@ -79,7 +79,6 @@ int main() {
             if (freeGame.freeSlots == 0) {
                 gameID = -1;
             } else {
-            std::cout << "freegame "<< freeGame.freeSlots << ' ' << freeGame.gameID << ' ' << freeGame.maxSlots << '\n';
                 gameID = freeGame.gameID;
                 pq.pop();
                 freeGame.freeSlots--;
@@ -92,7 +91,6 @@ int main() {
         rep.writeLock();
         repPtr->maxSlots = maxSlots;
         repPtr->gameID = gameID;
-        std::cout << "!!! " << maxSlots << ' ' << gameID << '\n';
         rep.readUnlock();
     }
     for (auto &t : threads) {
