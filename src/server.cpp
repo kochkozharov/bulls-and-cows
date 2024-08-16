@@ -8,7 +8,6 @@
 #include "thread"
 #include "utils.h"
 
-
 static void GameLoop(SharedMemory &gameMemory, int maxSlots) {
     int mysteryNumber = GenMysteryNumber();
     auto *statusPtr = static_cast<int *>(gameMemory.getData());
@@ -40,7 +39,7 @@ static void GameLoop(SharedMemory &gameMemory, int maxSlots) {
         gameMemory.writeUnlock();
     }
     int i = 0;
-    while (gamePtr[i].pid != 0){
+    while (gamePtr[i].pid != 0) {
         auto pid = gamePtr[i].pid;
         kill(pid, SIGTERM);
         ++i;
@@ -67,7 +66,7 @@ int main() {
             break;
         }
         if (reqPtr->newGame) {
-            pq.emplace(gamesCount, reqPtr->maxSlots, reqPtr->maxSlots-1);
+            pq.emplace(gamesCount, reqPtr->maxSlots, reqPtr->maxSlots - 1);
             gameID = gamesCount;
             maxSlots = reqPtr->maxSlots;
             gamesCount++;

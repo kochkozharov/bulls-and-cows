@@ -1,6 +1,6 @@
-#include <ios>
 #include <unistd.h>
 
+#include <ios>
 #include <iostream>
 #include <limits>
 
@@ -8,13 +8,14 @@
 #include "utils.h"
 
 class Guesser {
-    private:
-     WeakSharedMemory gameMemory;
-     int conID = 0;
-     bool connected = false;
-    public:
-     Guesser(WeakSharedMemory &gameMemory) : gameMemory(std::move(gameMemory)) {}
-     void sendGuess(int guess) {
+   private:
+    WeakSharedMemory gameMemory;
+    int conID = 0;
+    bool connected = false;
+
+   public:
+    Guesser(WeakSharedMemory &gameMemory) : gameMemory(std::move(gameMemory)) {}
+    void sendGuess(int guess) {
         auto *statusPtr = static_cast<int *>(gameMemory.getData());
         auto *gamePtr = reinterpret_cast<ConnectionSlot *>(statusPtr + 1);
         gameMemory.writeLock();
@@ -26,8 +27,7 @@ class Guesser {
         gamePtr[conID].pid = getpid();
         gamePtr[conID].guess = guess;
         gameMemory.readUnlock();
-     }
-     
+    }
 };
 
 int main() {
@@ -49,7 +49,7 @@ int main() {
             reqPtr->pid = getpid();
             reqPtr->maxSlots = maxSlots;
             req.readUnlock();
-            
+
             if (!rep.readLock(true)) {
                 exit(EXIT_SUCCESS);
             }
@@ -64,7 +64,7 @@ int main() {
                 exit(EXIT_SUCCESS);
             }
             gameID = repPtr->gameID;
-            
+
             maxSlots = repPtr->maxSlots;
             rep.writeUnlock();
         } else if (command == "stop") {
@@ -99,13 +99,15 @@ int main() {
             } else {
                 std::cerr << "Invalid input. Please enter an integer\n";
                 std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(),
+                                '\n');
                 continue;
             }
         }
 
         if (guess > 9999 || guess < 0) {
-            std::cerr << "Incorrect format. Please enter a number between 0 and 9999\n";
+            std::cerr << "Incorrect format. Please enter a number between 0 "
+                         "and 9999\n";
             continue;
         }
 

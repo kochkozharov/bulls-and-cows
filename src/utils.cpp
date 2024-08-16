@@ -6,9 +6,6 @@
 #include <array>
 #include <random>
 
-#include "shared_memory.h"
-#include "unistd.h"
-
 bool operator==(const GuessResult &a, const GuessResult &b) {
     return (a.bulls == b.bulls) && (a.cows == b.cows);
 }

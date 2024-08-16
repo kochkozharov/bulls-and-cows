@@ -6,7 +6,7 @@
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
-#include <iostream>
+#include <ctime>
 
 WeakSharedMemory::WeakSharedMemory(std::string_view name, std::size_t size)
     : _name(name), _size(size) {
