@@ -75,16 +75,21 @@ int main() {
             threads.emplace_back(GameLoop, std::ref(games[gameID]), maxSlots);
             std::cout << "Created new game " << gameID << '\n';
         } else {
-            auto freeGame = pq.top();
-            if (freeGame.freeSlots == 0) {
+            if (!pq.empty()) {
+                Game freeGame = pq.top();
+                if (freeGame.freeSlots == 0) {
+                    gameID = -1;
+                } else {
+                    gameID = freeGame.gameID;
+                    pq.pop();
+                    freeGame.freeSlots--;
+                    pq.push(freeGame);
+                    maxSlots = freeGame.maxSlots;
+                    std::cout << "Connected to game " << gameID << '\n';
+                }
+            }
+            else {
                 gameID = -1;
-            } else {
-                gameID = freeGame.gameID;
-                pq.pop();
-                freeGame.freeSlots--;
-                pq.push(freeGame);
-                maxSlots = freeGame.maxSlots;
-                std::cout << "Connected to game " << gameID << '\n';
             }
         }
         req.writeUnlock();
