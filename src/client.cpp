@@ -2,7 +2,7 @@
 #include <unistd.h>
 
 #include <iostream>
-#include <vector>
+#include <limits>
 
 #include "shared_memory.h"
 #include "utils.h"
@@ -38,6 +38,9 @@ int main() {
     int gameID;
     int maxSlots;
     std::string command;
+    std::cout << "create n - create room for n\n"
+                 "connect - connect to existing room\n"
+                 "stop - stop server\n";
     while (std::cin >> command) {
         if (command == "create") {
             std::cin >> maxSlots;
@@ -85,13 +88,27 @@ int main() {
         sizeof(int) + maxSlots * sizeof(ConnectionSlot));
     Guesser gsr(gameMemory);
     gsr.sendGuess(-2);
+    std::cout << "Enter your guess (4 digit number). Ctrl+d to exit\n";
     while (true) {
         int guess;
-        std::cin >> guess;
-        if (guess > 9999 || guess < -1) {
-            std::cerr << "Incorrect format\n";
+        if (!(std::cin >> guess)) {
+            if (std::cin.eof()) {
+                std::cout << "Exiting the program" << std::endl;
+                gsr.sendGuess(-1);
+                break;
+            } else {
+                std::cerr << "Invalid input. Please enter an integer\n";
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+        }
+
+        if (guess > 9999 || guess < 0) {
+            std::cerr << "Incorrect format. Please enter a number between 0 and 9999\n";
             continue;
         }
+
         gsr.sendGuess(guess);
     }
 }

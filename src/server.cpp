@@ -60,6 +60,7 @@ int main() {
 
     int gameID;
     int maxSlots;
+    std::cout << "Try to connect to server using game_client\n";
     while (true) {
         req.readLock();
         if (reqPtr->pid == -1) {
@@ -93,6 +94,7 @@ int main() {
         repPtr->gameID = gameID;
         rep.readUnlock();
     }
+    std::cout << "Waiting all sessions to close...\n";
     for (auto &t : threads) {
         t.join();
     }
